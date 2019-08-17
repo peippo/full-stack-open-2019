@@ -1,13 +1,51 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 
+const Statistics = ({ good, neutral, bad, total }) => {
+	return (
+		<>
+			<h2>Statistics</h2>
+			{total ? (
+				<>
+					<Statistic text="Good" value={good} />
+					<Statistic text="Neutral" value={neutral} />
+					<Statistic text="Bad" value={bad} />
+					<Statistic text="All" value={total} />
+					<Statistic
+						text="Average"
+						value={(total && (good - bad) / total).toFixed(2)}
+					/>
+					<Statistic
+						text="Positive"
+						value={(total && (good / total) * 100).toFixed(2)}
+						symbol="%"
+					/>
+				</>
+			) : (
+				<p>No feedback given</p>
+			)}
+		</>
+	);
+};
+
+const Statistic = ({ text, value, symbol }) => (
+	<p>
+		{text}: {value}
+		{symbol}
+	</p>
+);
+
+const Button = ({ type, handleClick, children }) => (
+	<button onClick={() => handleClick(type)}>{children}</button>
+);
+
 const App = () => {
 	const [good, setGood] = useState(0);
 	const [neutral, setNeutral] = useState(0);
 	const [bad, setBad] = useState(0);
 	const [total, setTotal] = useState(0);
 
-	const handleClick = type => () => {
+	const handleClick = type => {
 		setTotal(total + 1);
 
 		switch (type) {
@@ -27,22 +65,17 @@ const App = () => {
 
 	return (
 		<>
-			<div>
-				<h2>Give feedback</h2>
-				<button onClick={handleClick("good")}>Good</button>
-				<button onClick={handleClick("neutral")}>Neutral</button>
-				<button onClick={handleClick("bad")}>Bad</button>
-			</div>
-			<div>
-				<h2>Statistics</h2>
-				<p>Good: {good}</p>
-				<p>Neutral: {neutral}</p>
-				<p>Bad: {bad}</p>
-				<hr />
-				<p>All: {total}</p>
-				<p>Average: {(total && (good - bad) / total).toFixed(2)}</p>
-				<p>Positive: {(total && (good / total) * 100).toFixed(2)}%</p>
-			</div>
+			<h2>Give feedback</h2>
+			<Button type="good" handleClick={handleClick}>
+				Good
+			</Button>
+			<Button type="neutral" handleClick={handleClick}>
+				Neutral
+			</Button>
+			<Button type="bad" handleClick={handleClick}>
+				Bad
+			</Button>
+			<Statistics good={good} neutral={neutral} bad={bad} total={total} />
 		</>
 	);
 };
