@@ -1,12 +1,20 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 
+const Table = ({ children }) => {
+	return (
+		<table>
+			<tbody>{children}</tbody>
+		</table>
+	);
+};
+
 const Statistics = ({ good, neutral, bad, total }) => {
 	return (
 		<>
 			<h2>Statistics</h2>
 			{total ? (
-				<>
+				<Table>
 					<Statistic text="Good" value={good} />
 					<Statistic text="Neutral" value={neutral} />
 					<Statistic text="Bad" value={bad} />
@@ -20,7 +28,7 @@ const Statistics = ({ good, neutral, bad, total }) => {
 						value={(total && (good / total) * 100).toFixed(2)}
 						symbol="%"
 					/>
-				</>
+				</Table>
 			) : (
 				<p>No feedback given</p>
 			)}
@@ -29,10 +37,13 @@ const Statistics = ({ good, neutral, bad, total }) => {
 };
 
 const Statistic = ({ text, value, symbol }) => (
-	<p>
-		{text}: {value}
-		{symbol}
-	</p>
+	<tr>
+		<td>{text}</td>
+		<td>
+			{value}
+			{symbol}
+		</td>
+	</tr>
 );
 
 const Button = ({ type, handleClick, children }) => (
