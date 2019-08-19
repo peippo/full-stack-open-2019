@@ -6,6 +6,8 @@ const Weather = ({ country }) => {
 
 	// Fetch capital weather information
 	useEffect(() => {
+		let didCancel = false;
+
 		axios
 			.get(
 				`https://api.apixu.com/v1/current.json?key=d2595e26b0da4168814172021191808&q=${
@@ -13,8 +15,14 @@ const Weather = ({ country }) => {
 				}`
 			)
 			.then(response => {
-				setWeather(response.data.current);
+				if (!didCancel) {
+					setWeather(response.data.current);
+				}
 			});
+
+		return () => {
+			didCancel = true;
+		};
 	}, [country]);
 
 	return (
