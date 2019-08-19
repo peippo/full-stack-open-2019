@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import phonebookService from "./services/phonebook";
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
@@ -23,10 +23,19 @@ const App = () => {
 		setSearchTerm(event.target.value);
 	};
 
+	const removePerson = personToBeRemoved => {
+		if (window.confirm(`Remove ${personToBeRemoved.name}?`)) {
+			phonebookService.remove(personToBeRemoved.id);
+			setPersons(
+				persons.filter(person => person.id !== personToBeRemoved.id)
+			);
+		}
+	};
+
 	// fetch initial persons data from server
 	useEffect(() => {
-		axios.get("http://localhost:3001/persons").then(response => {
-			setPersons(response.data);
+		phonebookService.getAll().then(initialPersons => {
+			setPersons(initialPersons);
 		});
 	}, []);
 
@@ -42,11 +51,36 @@ const App = () => {
 		event.preventDefault();
 
 		if (persons.some(person => person.name === newName)) {
-			alert(`${newName} is already added to phonebook`);
+			if (
+				window.confirm(
+					`${newName} is already in the phonebook, update number?`
+				)
+			) {
+				const oldPerson = persons.find(
+					person => person.name === newName
+				);
+				const updatedPerson = { ...oldPerson, number: newNumber };
+				phonebookService
+					.update(oldPerson.id, updatedPerson)
+					.then(response => {
+						setPersons(
+							persons.map(person =>
+								oldPerson.id !== person.id ? person : response
+							)
+						);
+					});
+			}
 		} else if (newName === "") {
 			alert("Enter a name");
 		} else {
-			setPersons([...persons, { name: newName, number: newNumber }]);
+			const newPerson = {
+				name: newName,
+				number: newNumber
+			};
+
+			phonebookService.create(newPerson).then(returnedPerson => {
+				setPersons(persons.concat(returnedPerson));
+			});
 		}
 
 		setNewName("");
@@ -69,7 +103,10 @@ const App = () => {
 				handleClick={handleClick}
 			/>
 			<h2>Numbers</h2>
-			<Persons filteredPersons={filteredPersons} />
+			<Persons
+				filteredPersons={filteredPersons}
+				removePerson={removePerson}
+			/>
 		</>
 	);
 };
