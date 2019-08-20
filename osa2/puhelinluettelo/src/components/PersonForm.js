@@ -5,29 +5,31 @@ const PersonForm = ({
 	newNumber,
 	handleNameChange,
 	handleNumberChange,
-	handleClick
+	handleAddClick
 }) => {
 	return (
-		<form>
-			<div>
-				Name:{" "}
+		<form className="add">
+			<div className="add__row">
+				<span className="add__label">Name: </span>
 				<input
 					value={newName}
 					onChange={event => handleNameChange(event)}
 				/>
 			</div>
-			<div>
-				Number:{" "}
+			<div className="add__row">
+				<span className="add__label">Number: </span>
 				<input
 					value={newNumber}
 					onChange={event => handleNumberChange(event)}
 				/>
 			</div>
-			<div>
-				<button onClick={event => handleClick(event)} type="submit">
-					Add
-				</button>
-			</div>
+			<button
+				className="add__submit"
+				onClick={event => handleAddClick(event)}
+				type="submit"
+			>
+				Add
+			</button>
 		</form>
 	);
 };

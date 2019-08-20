@@ -2,7 +2,7 @@ import React from "react";
 
 const Filter = ({ searchTerm, handleSearchChange }) => {
 	return (
-		<div>
+		<div className="filter">
 			Search:{" "}
 			<input
 				value={searchTerm}

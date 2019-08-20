@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 import phonebookService from "./services/phonebook";
+import "./App.css";
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
@@ -10,6 +12,10 @@ const App = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [newName, setNewName] = useState("");
 	const [newNumber, setNewNumber] = useState("");
+	const [notification, setNotification] = useState({
+		message: null,
+		isError: false
+	});
 
 	const handleNameChange = event => {
 		setNewName(event.target.value);
@@ -23,12 +29,38 @@ const App = () => {
 		setSearchTerm(event.target.value);
 	};
 
-	const removePerson = personToBeRemoved => {
+	const handlePersonRemoval = personToBeRemoved => {
 		if (window.confirm(`Remove ${personToBeRemoved.name}?`)) {
-			phonebookService.remove(personToBeRemoved.id);
-			setPersons(
-				persons.filter(person => person.id !== personToBeRemoved.id)
-			);
+			phonebookService
+				.remove(personToBeRemoved.id)
+				.then(() => {
+					setPersons(
+						persons.filter(
+							person => person.id !== personToBeRemoved.id
+						)
+					);
+					setNotification({
+						message: `${
+							personToBeRemoved.name
+						} was removed successfully!`,
+						isError: false
+					});
+					setTimeout(() => {
+						setNotification({ message: null, isError: false });
+					}, 4000);
+				})
+				.catch(error => {
+					setNotification({ message: `${error}!`, isError: true });
+
+					setTimeout(() => {
+						setNotification({ message: null, isError: false });
+					}, 4000);
+					setPersons(
+						persons.filter(
+							person => person.id !== personToBeRemoved.id
+						)
+					);
+				});
 		}
 	};
 
@@ -47,7 +79,7 @@ const App = () => {
 		setFilteredPersons(filtered);
 	}, [searchTerm, persons]);
 
-	const handleClick = event => {
+	const handleAddClick = event => {
 		event.preventDefault();
 
 		if (persons.some(person => person.name === newName)) {
@@ -68,6 +100,28 @@ const App = () => {
 								oldPerson.id !== person.id ? person : response
 							)
 						);
+						setNotification({
+							message: `Number associated with '${
+								oldPerson.name
+							}' updated successfully!`,
+							isError: false
+						});
+						setTimeout(() => {
+							setNotification({ message: null, isError: false });
+						}, 4000);
+					})
+					.catch(error => {
+						setNotification({
+							message: `${error}!`,
+							isError: true
+						});
+
+						setTimeout(() => {
+							setNotification({ message: null, isError: false });
+						}, 4000);
+						setPersons(
+							persons.filter(person => person.id !== oldPerson.id)
+						);
 					});
 			}
 		} else if (newName === "") {
@@ -80,6 +134,13 @@ const App = () => {
 
 			phonebookService.create(newPerson).then(returnedPerson => {
 				setPersons(persons.concat(returnedPerson));
+				setNotification({
+					message: `'${returnedPerson.name}' was added successfully!`,
+					isError: false
+				});
+				setTimeout(() => {
+					setNotification({ message: null, isError: false });
+				}, 4000);
 			});
 		}
 
@@ -94,18 +155,18 @@ const App = () => {
 				searchTerm={searchTerm}
 				handleSearchChange={handleSearchChange}
 			/>
+			<Notification notification={notification} />
+			<Persons
+				filteredPersons={filteredPersons}
+				handlePersonRemoval={handlePersonRemoval}
+			/>
 			<h2>Add new contact</h2>
 			<PersonForm
 				newName={newName}
 				newNumber={newNumber}
 				handleNameChange={handleNameChange}
 				handleNumberChange={handleNumberChange}
-				handleClick={handleClick}
-			/>
-			<h2>Numbers</h2>
-			<Persons
-				filteredPersons={filteredPersons}
-				removePerson={removePerson}
+				handleAddClick={handleAddClick}
 			/>
 		</>
 	);
