@@ -40,9 +40,7 @@ const App = () => {
 						)
 					);
 					setNotification({
-						message: `${
-							personToBeRemoved.name
-						} was removed successfully!`,
+						message: `${personToBeRemoved.name} was removed successfully!`,
 						isError: false
 					});
 					setTimeout(() => {
@@ -101,9 +99,7 @@ const App = () => {
 							)
 						);
 						setNotification({
-							message: `Number associated with '${
-								oldPerson.name
-							}' updated successfully!`,
+							message: `Number associated with '${oldPerson.name}' updated successfully!`,
 							isError: false
 						});
 						setTimeout(() => {
@@ -126,6 +122,8 @@ const App = () => {
 			}
 		} else if (newName === "") {
 			alert("Enter a name");
+		} else if (newNumber === "") {
+			alert("Enter a number");
 		} else {
 			const newPerson = {
 				name: newName,
