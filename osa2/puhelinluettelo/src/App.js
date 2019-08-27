@@ -130,16 +130,28 @@ const App = () => {
 				number: newNumber
 			};
 
-			phonebookService.create(newPerson).then(returnedPerson => {
-				setPersons(persons.concat(returnedPerson));
-				setNotification({
-					message: `'${returnedPerson.name}' was added successfully!`,
-					isError: false
+			phonebookService
+				.create(newPerson)
+				.then(returnedPerson => {
+					setPersons(persons.concat(returnedPerson));
+					setNotification({
+						message: `'${returnedPerson.name}' was added successfully!`,
+						isError: false
+					});
+					setTimeout(() => {
+						setNotification({ message: null, isError: false });
+					}, 4000);
+				})
+				.catch(error => {
+					setNotification({
+						message: `${error.response.data.error}!`,
+						isError: true
+					});
+
+					setTimeout(() => {
+						setNotification({ message: null, isError: false });
+					}, 4000);
 				});
-				setTimeout(() => {
-					setNotification({ message: null, isError: false });
-				}, 4000);
-			});
 		}
 
 		setNewName("");

@@ -6,7 +6,7 @@ const Persons = ({ filteredPersons, handlePersonRemoval }) => {
 			<tbody>
 				{filteredPersons.map(person => {
 					return (
-						<tr key={person.name}>
+						<tr key={person.id}>
 							<td>{person.name}</td>
 							<td>{person.number}</td>
 							<td
